@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title th:utext="#{listado.title}"></title>
+    <link rel="icon" href="data:,"/>
+    <link rel="stylesheet" th:href="@{/css/estilos.css}"/>
+</head>
+<body>
+<h1 th:text="#{listado.h1.titulo}"></h1>
+<div class="negrita" th:replace="fragments/cabecera :: datos"></div>
+<br/>
+<table border="1">
+    <tr>
+        <th>ID Usuario</th>
+        <th>Usuario</th>
+        <th>Foto de perfil</th>
+        <th>Apellido 1</th>
+        <th>Apellido 2</th>
+        <th>Nombre</th>
+        <th>Genero</th>
+        <th>Pais</th>
+        <th>Fecha de nacimiento</th>
+        <th>Aficiones</th>
+        <th>Musicas</th>
+        <th>Modificar</th>
+        <th>Eliminar</th>
+    </tr>
+    <tr th:each="usuarioDTO : ${listaUsuarios}">
+        <td th:text="${usuarioDTO.idUsuario}"/>
+        <td th:text="${usuarioDTO.usuario}"/>
+        <td><img class="imagen" th:src="@{${usuarioDTO.rutaFotoPerfil}}"/></td>
+        <td th:text="${usuarioDTO.apellido1}"/>
+        <td th:text="${usuarioDTO.apellido2}"/>
+        <td th:text="${usuarioDTO.nombre}"/>
+        <td th:text="${usuarioDTO.siglasGenero}"/>
+        <td th:text="${usuarioDTO.siglasPais}"/>
+        <td th:text="${usuarioDTO.fechaNacimiento}"/>
+        <td>
+            <th:block th:each="aficion : ${usuarioDTO.listaAficiones}">
+                <span th:text="${aficion}"/>
+            </th:block>
+        </td>
+        <td>
+            <th:block th:each="musica : ${usuarioDTO.listaMusicas}">
+                <span th:text="${musica}"/>
+            </th:block>
+        </td>
+        <td><a th:href="@{/usuario/modificacion/}+${usuarioDTO.idUsuario}"><input type="button" th:value="#{listado.modificar}"/></a>
+        </td>
+        <td><a th:href="@{/usuario/baja/}+${usuarioDTO.idUsuario}"><input type="button" th:value="#{listado.eliminar}"/></a>
+        </td>
+    </tr>
+</table>
+<br/>
+<a href="/acceso/logout"><input type="button" th:value="#{formLogin.desconexion}"/></a>
+</body>
+</html>

@@ -1,0 +1,16 @@
+.rojo {
+	color:red;
+}
+.negrita {
+	font-weight: bold;
+}
+.imagen {
+display: block;
+margin: auto;
+max-width: 64px;
+max-height: 64px;
+}
+.cabecera {
+width: 48%;
+float: left;
+}

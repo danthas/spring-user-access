@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title th:utext="#{formAlta.title}"></title>
+    <link rel="icon" href="data:,"/>
+    <link rel="stylesheet" th:href="@{/css/estilos.css}"/>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.2/rollups/aes.js"></script>
+    <script src="http://crypto-js.googlecode.com/svn/tags/3.1.2/build/rollups/md5.js"></script>
+    <script th:src="@{/js/funciones.js}"></script>
+</head>
+<body>
+<h1 th:text="#{formAlta.h1.titulo}"></h1>
+<div class="negrita" th:replace="fragments/cabecera :: datos"></div>
+<br/>
+<form id="alta" th:object="${usuario}" th:action="@{/usuario/alta}" enctype="multipart/form-data" method="post">
+    <fieldset>
+        <legend class="negrita" th:text="#{formAlta.campo.registroUsuario}"></legend>
+        <label>
+            <span class="negrita" th:text="#{formAlta.idUsuario.etiqueta}"/>
+            <input th:disabled="true" type="number" name="idUsuario" id="idUsuario" th:field="*{idUsuario}"/>
+            <span class="negrita" th:text="#{formAlta.idUsuario.valor}"/>
+        </label>
+        <br/>
+        <label>
+            <span class="rojo negrita">*</span>
+            <span class="negrita" th:text="#{formAlta.usuario.etiqueta}"/>
+            <input type="text" name="usuario" id="usuario" th:field="*{usuario}"/>
+            <span class="rojo negrita" th:each="error: ${#fields.errors('usuario')}" th:utext="|${error} &nbsp;|"/>
+        </label>
+        <br/>
+        <label>
+            <span class="rojo negrita">*</span>
+            <span class="negrita" th:text="#{formAlta.clave.etiqueta}"/>
+            <input type="password" name="clave" id="clave" th:field="*{clave}"/>
+            <button type="button" onclick="mostrarClave()"><img th:src="@{/img/ver.png}" width="10" height="10">
+            </button>
+            <span class="rojo negrita" th:each="error: ${#fields.errors('clave')}" th:utext="|${error} &nbsp;|"/>
+        </label>
+        <br/>
+        <label>
+            <span class="rojo negrita">*</span>
+            <span class="negrita" th:text="#{formAlta.confirmaClave.etiqueta}"/>
+            <input type="password" name="confirmaClave" id="confirmaClave" th:field="*{confirmaClave}"/>
+            <span class="rojo negrita" th:each="error: ${#fields.errors('confirmaClave')}" th:utext="|${error} &nbsp;|"/>
+            <span class="rojo negrita" th:text="${#maps.containsKey(listaErrores, 'clave') ? listaErrores.get('clave'): ''}"/>
+        </label>
+        <br/>
+        <label>
+            <span class="negrita" th:text="#{formAlta.fotoPerfil.etiqueta}"/>
+            <input type="file" name="fotoPerfil" id="fotoPerfil"/>
+            <span class="rojo negrita" th:each="error: ${#fields.errors('rutaFotoPerfil')}" th:utext="|${error} &nbsp;|"/>
+        </label>
+    </fieldset>
+    <fieldset>
+        <legend class="negrita" th:text="#{formAlta.campo.datosPersonales}"></legend>
+        <label>
+            <span class="rojo negrita">*</span>
+            <span class="negrita" th:text="#{formAlta.apellido1.etiqueta}"/>
+            <input type="text" name="apellido1" id="apellido1" th:field="*{apellido1}"/>
+            <span class="rojo negrita" th:each="error: ${#fields.errors('apellido1')}" th:utext="|${error} &nbsp;|"/>
+        </label>
+        <br/>
+        <label>
+            <span class="rojo negrita">*</span>
+            <span class="negrita" th:text="#{formAlta.apellido2.etiqueta}"/>
+            <input type="text" name="apellido2" id="apellido2" th:field="*{apellido2}"/>
+            <span class="rojo negrita" th:each="error: ${#fields.errors('apellido2')}" th:utext="|${error} &nbsp;|"/>
+        </label>
+        <br/>
+        <label>
+            <span class="rojo negrita">*</span>
+            <span class="negrita" th:text="#{formAlta.nombre.etiqueta}"/>
+            <input type="text" name="nombre" id="nombre" th:field="*{nombre}"/>
+            <span class="rojo negrita" th:each="error: ${#fields.errors('nombre')}" th:utext="|${error} &nbsp;|"/>
+        </label>
+        <br/>
+        <label>
+            <span class="rojo negrita">*</span>
+            <span class="negrita" th:text="#{formAlta.genero.etiqueta}"></span>
+            <th:block th:each="genero: ${listaGenerosOrdenada}">
+                <input type="radio" name="siglasGenero" th:id="${genero.value}" th:field="*{siglasGenero}" th:value="${genero.value}"
+                       th:checked="${genero.key == siglasGenero}" onclick="deseleccionarRadio(this)"/>
+                <span th:text="${genero.value}"/>
+            </th:block>
+            <span class="rojo negrita" th:each="error: ${#fields.errors('siglasGenero')}" th:utext="|${error} &nbsp;|"/>
+        </label>
+        <br/>
+        <label>
+            <span class="rojo negrita">*</span>
+            <span class="negrita" th:text="#{formAlta.fechaNacimiento.etiqueta}"/>
+            <input type="text" name="fechaNacimiento" id="fechaNacimiento" th:field="*{fechaNacimiento}"/>
+            <span class="rojo negrita" th:each="error: ${#fields.errors('fechaNacimiento')}" th:utext="|${error} &nbsp;|"/>
+            <span class="rojo negrita" th:text="${#maps.containsKey(listaErrores, 'fechaNacimiento') ? listaErrores.get('fechaNacimiento'): ''}"/>
+        </label>
+        <br/>
+        <label>
+            <span class="rojo negrita">*</span>
+            <span class="negrita" th:text="#{formAlta.pais.etiqueta}"></span>
+            <select name="siglasPais" id="siglasPais">
+                <th:block th:each="pais: ${listaPaisesOrdenada}">
+                    <option th:field="*{siglasPais}" th:value="${pais.value}" th:selected="${pais.key == siglasPais}"/>
+                    <span th:text="${pais.value}"/>
+                </th:block>
+            </select>
+            <span class="rojo negrita" th:each="error: ${#fields.errors('siglasPais')}" th:utext="|${error} &nbsp;|"/>
+        </label>
+        <br/>
+        <label>
+            <span class="rojo negrita">*</span>
+            <span class="negrita" th:text="#{formAlta.aficiones.etiqueta}"></span>
+            <th:block th:each="aficion: ${listaAficionesOrdenada}">
+                <input type="checkbox" name="aficiones" th:id="${aficion.value}" th:field="*{aficiones}" th:value="${aficion.value}"
+                       th:checked="${aficiones != null} and ${#lists.contains(aficiones, aficion.key)}"/>
+                <span th:text="${aficion.value}"/>
+            </th:block>
+            <input type="button" th:value="#{formAlta.boton.checkboxTodo}"
+                   onclick="javascript:seleccionarCheckboxes(document.getElementsByName('aficiones'))"/>
+            <input type="button" th:value="#{formAlta.boton.checkboxNada}"
+                   onclick="javascript:deseleccionarCheckboxes(document.getElementsByName('aficiones'))"/>
+            <span class="rojo negrita" th:each="error: ${#fields.errors('aficiones')}" th:utext="|${error} &nbsp;|"/>
+        </label>
+        <br/>
+        <label>
+            <span class="rojo negrita">*</span>
+            <span class="negrita" th:text="#{formAlta.musicas.etiqueta}"></span>
+            <select name="musicas" id="musicas" size="5" multiple="multiple">
+                <th:block th:each="musica: ${listaMusicasOrdenada}">
+                    <option th:field="*{musicas}" th:value="${musica.value}"
+                            th:selected="${musicas != null} and ${#lists.contains(musicas, musica.key)}"/>
+                    <span th:text="${musica.value}"/>
+                </th:block>
+            </select>
+            <input type="button" th:value="#{formAlta.boton.musicasTodo}"
+                   onclick="javascript:llenarSelect(document.getElementById('musicas'))"/>
+            <input type="button" th:value="#{formAlta.boton.musicasNada}"
+                   onclick="javascript:vaciarSelect(document.getElementById('musicas'))"/>
+            <span class="rojo negrita" th:each="error: ${#fields.errors('musicas')}" th:utext="|${error} &nbsp;|"/>
+        </label>
+        <br/>
+        <span class="negrita" th:text="#{formAlta.comentarios.etiqueta}"/>
+        <textarea name="comentarios" id="comentarios" th:value="${comentarios}"></textarea>
+    </fieldset>
+    <fieldset>
+        <legend class="negrita" th:text="#{formAlta.campo.gestionFormulario}"></legend>
+        <input type="submit" th:value="#{formAlta.submit.texto}"/>
+        <input type="reset" th:value="#{formAlta.reset.texto}"/>
+        <input type="button" onclick="limpiarFormulario()" th:value="#{formAlta.vaciar.texto}"/>
+    </fieldset>
+</form>
+</body>
+</html>
